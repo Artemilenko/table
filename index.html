@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Table</title>
+	<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap"
+	rel="stylesheet" />
+	<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="multiselect-widget">
+		<div class="multiselect-widget__list multiselect-widget__list--left">
+			<div class="multiselect-widget__header">
+				<div class="multiselect-widget__header-text multiselect-widget__header-text--left">
+					<span class="multiselect-widget__count--left">Geen</span> geselecteerde items
+				</div>
+				<button class="multiselect-widget__button multiselect-widget__button--arrow-left">&#8677;</button>
+			</div>
+			<div class="multiselect-widget__list-content multiselect-widget__list-content--left"></div>
+		</div>
+		<div class="multiselect-widget__list multiselect-widget__list--right">
+			<div class="multiselect-widget__header multiselect-widget__header--right">
+				<input type="text" name="select" class="multiselect-widget__header-search">
+				<div class="multiselect-widget__header-text multiselect-widget__header-text--right">
+					<span class="multiselect-widget__count--right">Geen</span> geselecteerde items
+				</div>
+				<button class="multiselect-widget__button multiselect-widget__button--search">&reg;</button>
+				<button class="multiselect-widget__button multiselect-widget__button--arrow-right">&#8676;</button>
+			</div>
+			<div class="multiselect-widget__list-content multiselect-widget__list-content--right"></div>
+		</div>
+	</div>
+
+	<script src="js/script.js"></script>
+</body>
+</html>
