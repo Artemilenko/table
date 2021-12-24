@@ -43,10 +43,11 @@
                 if (searchField.value.length > 0) {
                     this.value = searchField.value;
                     this.users = {};
-                    this.ids = {};
+                    
                     this.countRight = 0;
                     reg = new RegExp(searchField.value, 'gi');
                     if (this.leftField.children.length === 0) {
+                        this.ids = {};
                         this.get('js/db.json')
                         .then(response => {
                             for (let key in response) {
@@ -59,7 +60,6 @@
 
                                     this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
 
-                                    // console.log(this.users);
                                     console.log(this.ids);
                                 }
                             }
@@ -68,21 +68,37 @@
                     } else {
                         this.get('js/db.json')
                         .then(response => {
+                            let flag = 0;
                             for (let key in response) {
-                                for (let guest in this.ids) {
-                                    if (this.ids[guest].name !== response[key].name) {
-                                        if (response[key].search(reg) != -1 && searchField.value.length != 0) {
-                                            this.createUser(response[key], outputField, 'multiselect-widget__force-right');
-                                            this.countRight++;
-                                            
-                                            this.counter(this.rightField, this.userCountRight);
-                                            this.counter(this.leftField, this.userCountLeft);
-        
-                                            this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-        
-                                            // console.log(this.users);
-                                            console.log(this.ids);
-                                        }
+                                // for (let guest in this.ids) {
+                                //     if (this.ids[guest].id !== key) {
+                                //         flag++;
+                                //     }
+                                // }
+                                // if (Object.keys(this.ids).length === flag) {
+                                //     console.log(response[key]);
+                                //     if (response[key].search(reg) != -1 && searchField.value.length != 0) {
+                                //         this.createUser(response[key], outputField, 'multiselect-widget__force-right');
+                                //         this.countRight++;
+
+                                //         this.counter(this.rightField, this.userCountRight);
+                                //         this.counter(this.leftField, this.userCountLeft);
+
+                                //         this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
+
+                                //         console.log(this.ids);
+                                //     }
+                                // }
+                                // flag = 0
+
+                                if (response[key].search(reg) != -1 && searchField.value.length != 0) {
+                                    this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
+                                }
+                            }
+                            for (let key in this.users) {
+                                for (let obj in this.ids) {
+                                    if(key !== obj) {
+                                        flag++;
                                     }
                                 }
                             }
@@ -144,7 +160,7 @@
                     }
 
                     this.leftField.innerHTML = '';
-                    outputField.innerHTML = '';
+                    // outputField.innerHTML = '';
 
                     for (let key in this.ids) {
                         this.users[key] = this.ids[key];
