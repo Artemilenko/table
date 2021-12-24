@@ -68,40 +68,52 @@
                     } else {
                         this.get('js/db.json')
                         .then(response => {
-                            let flag = 0;
+                            let flag = false;
                             for (let key in response) {
-                                // for (let guest in this.ids) {
-                                //     if (this.ids[guest].id !== key) {
-                                //         flag++;
-                                //     }
-                                // }
-                                // if (Object.keys(this.ids).length === flag) {
-                                //     console.log(response[key]);
-                                //     if (response[key].search(reg) != -1 && searchField.value.length != 0) {
-                                //         this.createUser(response[key], outputField, 'multiselect-widget__force-right');
-                                //         this.countRight++;
-
-                                //         this.counter(this.rightField, this.userCountRight);
-                                //         this.counter(this.leftField, this.userCountLeft);
-
-                                //         this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-
-                                //         console.log(this.ids);
-                                //     }
-                                // }
-                                // flag = 0
-
-                                if (response[key].search(reg) != -1 && searchField.value.length != 0) {
-                                    this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-                                }
-                            }
-                            for (let key in this.users) {
-                                for (let obj in this.ids) {
-                                    if(key !== obj) {
+                                for (let guest in this.ids) {
+                                    if (this.ids[guest].id !== key) {
                                         flag++;
                                     }
                                 }
+                                if (Object.keys(this.ids).length === flag) {
+                                    console.log(response[key]);
+                                    if (response[key].search(reg) != -1 && searchField.value.length != 0) {
+                                        this.createUser(response[key], outputField, 'multiselect-widget__force-right');
+                                        this.countRight++;
+
+                                        this.counter(this.rightField, this.userCountRight);
+                                        this.counter(this.leftField, this.userCountLeft);
+
+                                        this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
+
+                                        console.log(this.ids);
+                                    }
+                                }
+                                flag = 0
+
+                                // if (response[key].search(reg) != -1 && searchField.value.length != 0) {
+                                //     this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
+                                // }
                             }
+
+                            // console.log(this.ids[0].name, this.users[0].name);
+
+                            // for (let i = 0; i < Object.keys(this.users).length; i++) {
+                            //     for (let j = 0; j < Object.keys(this.ids).length; j++) {
+                            //         console.log(this.users[i].name, this.ids[j].name);
+                            //         if (this.users[i].name === this.ids[j].name) {
+                            //             continue;
+                            //         } else {
+                            //             this.createUser(this.users[i].name, outputField, 'multiselect-widget__force-right');
+                            //             this.countRight++;
+
+                            //             this.counter(this.rightField, this.userCountRight);
+                            //             this.counter(this.leftField, this.userCountLeft);
+
+                            //             console.log(this.ids);
+                            //         }
+                            //     }
+                            // }
                         });
                         outputField.innerHTML = '';
                     }
@@ -119,9 +131,24 @@
                         this.createUser(this.users[key].name, outputField, 'multiselect-widget__force-left');
                     }
                     
-                    for (let key in this.users) {
-                        this.ids[key] = this.users[key];
+                    // for (let i = 1; i < Object.keys(this.users).length; i++) {
+                    //     this.ids[i] = this.users[key];
+                    // }
+                    // for (let key in this.users) {
+                    //     this.ids[+key + 1 + ''] = this.users[key];
+                    // }
+
+                    let buffer = {};
+
+                    for (let key in this.ids) {
+                        buffer[Object.keys(buffer).length] = this.ids[key];
                     }
+
+                    for (let key in this.users) {
+                        buffer[Object.keys(buffer).length] = this.users[key];
+                    }
+
+                    this.ids = Object.assign({}, buffer);
 
                     this.users = {};
 
@@ -201,9 +228,25 @@
                         for (let key in this.users) {
                             if (this.users[key].name === target.textContent) {
                                 this.ids[key] = this.users[key];
+
                                 delete this.users[key];
                             }
                         }
+
+                        // let buffer = {};
+
+                        // for (let key in this.ids) {
+                        //     buffer[Object.keys(buffer).length] = this.ids[key];
+                        // }
+
+                        // for (let key in this.users) {
+                        //     buffer[Object.keys(buffer).length] = this.users[key];
+                        // }
+
+                        // this.ids = Object.assign({}, buffer);
+
+                        // this.users = {};
+
                         target.classList.remove('multiselect-widget__force-right');
                         target.classList.add('multiselect-widget__force-left');
                         fieldTo.append(target);
