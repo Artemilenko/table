@@ -227,7 +227,27 @@
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.users) {
                             if (this.users[key].name === target.textContent) {
+                                let buffer = {};
+
+                                for (let key in this.ids) {
+                                    buffer[Object.keys(buffer).length] = this.ids[key];
+                                }
+
+                                this.ids = {};
+
                                 this.ids[key] = this.users[key];
+
+                                for (let key in this.ids) {
+                                    buffer[Object.keys(buffer).length] = this.ids[key];
+                                }
+
+                                // for (let key in this.users) {
+                                //     buffer[Object.keys(buffer).length] = this.users[key];
+                                // }
+
+                                this.ids = Object.assign({}, buffer);
+
+                                // this.users = {};
 
                                 delete this.users[key];
                             }
