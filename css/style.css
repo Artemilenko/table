@@ -52,11 +52,17 @@ h1, h2, h3, p {
 }
 
 .multiselect-widget__button {
+    user-select: none;
     width: 1.6rem;
     height: 1.6rem;
     background-color: #DFEFFC;
     border: none;
     color: blue;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
 }
 
 .multiselect-widget__list-content {

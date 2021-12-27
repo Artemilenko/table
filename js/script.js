@@ -144,6 +144,8 @@
                         buffer[Object.keys(buffer).length] = this.ids[key];
                     }
 
+                    // this.ids = {};
+
                     for (let key in this.users) {
                         buffer[Object.keys(buffer).length] = this.users[key];
                     }
@@ -186,12 +188,30 @@
                         this.createUser(this.ids[key].name, outputField, 'multiselect-widget__force-right');
                     }
 
+                    let buffer = {};
+
+                    for (let key in this.users) {
+                        buffer[Object.keys(buffer).length] = this.users[key];
+                    }
+
+                    for (let key in this.ids) {
+                        buffer[Object.keys(buffer).length] = this.ids[key];
+                    }
+
+                    // this.ids = {};
+
+                    // for (let key in this.users) {
+                    //     buffer[Object.keys(buffer).length] = this.users[key];
+                    // }
+
+                    this.users = Object.assign({}, buffer);
+
                     this.leftField.innerHTML = '';
                     // outputField.innerHTML = '';
 
-                    for (let key in this.ids) {
-                        this.users[key] = this.ids[key];
-                    }
+                    // for (let key in this.ids) {
+                    //     this.users[key] = this.ids[key];
+                    // }
 
                     this.ids = {};
 
@@ -289,7 +309,26 @@
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.ids) {
                             if (this.ids[key].name === target.textContent) {
+                                let buffer = {};
+
+                                for (let key in this.users) {
+                                    buffer[Object.keys(buffer).length] = this.users[key];
+                                }
+
+                                this.users = {};
+
                                 this.users[key] = this.ids[key];
+
+                                for (let key in this.users) {
+                                    buffer[Object.keys(buffer).length] = this.users[key];
+                                }
+
+                                // for (let key in this.users) {
+                                //     buffer[Object.keys(buffer).length] = this.users[key];
+                                // }
+
+                                this.users = Object.assign({}, buffer);
+
                                 delete this.ids[key];
                             }
                         }
