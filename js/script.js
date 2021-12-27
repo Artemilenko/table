@@ -366,6 +366,32 @@
             });
         }
 
+        // async dataPost(url, body) {
+        //     const data = await fetch(url, {
+        //         method: "POST",
+        //         body: body
+        //     });
+
+        //     return await data.text();
+        // }
+
+        // formPost() {
+        //     const form = document.querySelector('.form');
+
+        //     form.addEventListener('submit', e => {
+        //         e.preventDefault();
+
+        //         const formData = new FormData(form);
+
+        //         for (let key in this.ids) {
+        //             formData.append(key, this.ids[key].id);
+        //         }
+
+        //         this.dataPost('js/server.php', formData)
+        //         .then(response => console.log(response));
+        //     });
+        // }
+
         init() {
             this.getUsers(this.searchField, this.rightField);
             this.redirectAllRight(this.rightArrow, this.leftField);
@@ -373,6 +399,7 @@
             this.search(this.buttonSearch);
             this.redirectOneRight(this.rightField, this.leftField);
             this.redirectOneLeft(this.leftField, this.rightField);
+            // this.formPost();
         }
     }
 

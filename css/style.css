@@ -154,3 +154,32 @@ h1, h2, h3, p {
     transform: translateY(-50%);
     right: 3.8rem;
 }
+
+
+.form {
+    margin-top: 50px;
+    padding: 25px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    width: 300px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input {
+    width: 200px;
+    height: 50px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+}
+
+.submit {
+    width: 200px;
+    height: 50px;
+    border: none;
+    background-color: grey;
+    border-radius: 5px;
+}
