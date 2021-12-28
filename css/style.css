@@ -12,14 +12,13 @@ h1, h2, h3, p {
 }
 
 .multiselect-widget {
-    margin: 0 auto;
     width: 50rem;
     height: 32.8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
+    border: 0.1rem solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
 }
 
 .multiselect-widget__list {
@@ -32,14 +31,14 @@ h1, h2, h3, p {
 }
 
 .multiselect-widget__list--left {
-    border-right: 1px solid rgba(0, 0, 0, 0.15);
+    border-right: 0.1rem solid rgba(0, 0, 0, 0.15);
 }
 
 .multiselect-widget__header {
     width: 100%;
     height: 4rem;
     padding: 1.2rem 1.7rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 0.1rem solid rgba(0, 0, 0, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -63,6 +62,11 @@ h1, h2, h3, p {
     justify-content: center;
     align-items: center;
     font-weight: 500;
+    cursor: pointer;
+}
+
+.multiselect-widget__button:active {
+    color: #ffa600;
 }
 
 .multiselect-widget__list-content {
@@ -153,33 +157,5 @@ h1, h2, h3, p {
     top: 50%;
     transform: translateY(-50%);
     right: 3.8rem;
-}
-
-
-.form {
-    margin-top: 50px;
-    padding: 25px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    width: 300px;
-    height: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.input {
-    width: 200px;
-    height: 50px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-}
-
-.submit {
-    width: 200px;
-    height: 50px;
-    border: none;
-    background-color: grey;
-    border-radius: 5px;
+    font-size: 0.8rem;
 }

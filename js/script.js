@@ -292,7 +292,7 @@
 
 (function() {
     class MultiWidget {
-        constructor(lField, rField, lText, rText, searchField, lArrow, rArrow, btnSearch, path, userStyle, userCountLeft, userCountRight) {
+        constructor(lField, rField, lText, rText, searchField, lArrow, rArrow, btnSearch, path, userStyle, userCountLeft, userCountRight, form) {
             this.leftField = document.querySelector(lField);
             this.rightField = document.querySelector(rField);
             this.leftText = document.querySelector(lText);
@@ -307,6 +307,7 @@
             this.userCountRight = document.querySelector(userCountRight);
             this.countRight = 0;
             this.countLeft = 0;
+            this.form = document.querySelector(form);
             this.users = {};
             this.ids = {};
         }
@@ -314,11 +315,14 @@
         async get(url) {
             let result = await fetch(url);
 
-            if (!result.ok) {
-                throw new Error(`Could not fetch ${url}, status: ${result.status}`);
-            }
-
             return await result.json();
+        }
+
+        search(btn) {
+            btn.addEventListener('click', () => {
+                this.rightText.classList.toggle('active__right-text');
+                this.searchField.classList.toggle('active__header-search');
+            });
         }
 
         createUser(name, outputField, style) {
@@ -329,36 +333,62 @@
             user.textContent = name;
         }
 
+        counter(field, count) {
+            if (field.children.length === 0) {
+                count.textContent = 'Geen';
+            } else {
+                count.textContent = field.children.length;
+            }
+        }
+
+        counterRun() {
+            this.counter(this.leftField, this.userCountLeft);
+            this.counter(this.rightField, this.userCountRight);
+        }
+
+        enumeratingItemsForBuffer(bufferObj, mainObj) {
+            for (let key in mainObj) {
+                bufferObj[Object.keys(bufferObj).length] = mainObj[key];
+            }
+        }
+
+        creatingMultipleUsers(obj, field, styleClass) {
+            for (let key in obj) {
+                this.createUser(obj[key].name, field, styleClass);
+            }
+        }
+
         getUsers(searchField, outputField) {
             let reg;
             searchField.addEventListener('input', () => {
                 if (searchField.value.length > 0) {
                     this.value = searchField.value;
                     this.users = {};
-                    
                     this.countRight = 0;
+
                     reg = new RegExp(searchField.value, 'gi');
+
                     if (this.leftField.children.length === 0) {
                         this.ids = {};
-                        this.get('js/db.json')
+                        this.get(`{{ route('getUserLikeName') }}?user_name=${searchField.value}`)
                         .then(response => {
                             for (let key in response) {
                                 if (response[key].search(reg) != -1 && searchField.value.length != 0) {
                                     this.createUser(response[key], outputField, 'multiselect-widget__force-right');
                                     this.countRight++;
                                     
-                                    this.counter(this.rightField, this.userCountRight);
-                                    this.counter(this.leftField, this.userCountLeft);
+                                    this.counterRun();
 
                                     this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-
-                                    console.log(this.ids);
                                 }
                             }
+                        })
+                        .catch(function (error) {
+                            console.log(error);
                         });
                         outputField.innerHTML = '';
                     } else {
-                        this.get('js/db.json')
+                        this.get(`{{ route('getUserLikeName') }}?user_name=${searchField.value}`)
                         .then(response => {
                             let flag = false;
                             for (let key in response) {
@@ -368,48 +398,20 @@
                                     }
                                 }
                                 if (Object.keys(this.ids).length === flag) {
-                                    console.log(response[key]);
                                     if (response[key].search(reg) != -1 && searchField.value.length != 0) {
                                         this.createUser(response[key], outputField, 'multiselect-widget__force-right');
                                         this.countRight++;
 
-                                        this.counter(this.rightField, this.userCountRight);
-                                        this.counter(this.leftField, this.userCountLeft);
+                                        this.counterRun();
 
                                         this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-
-                                        console.log(this.ids);
                                     }
                                 }
                                 flag = 0
-
-                                // if (response[key].search(reg) != -1 && searchField.value.length != 0) {
-                                //     this.users[Object.keys(this.users).length] = {id: key, name: response[key]};
-                                // }
                             }
-
-                            // console.log(this.ids[0].name, this.users[0].name);
-
-                            // for (let i = 0; i < Object.keys(this.users).length; i++) {
-                            //     for (let j = 0; j < Object.keys(this.ids).length; j++) {
-                            //         console.log(this.users[i].name, this.ids[j].name);
-                            //         if (this.users[i].name === this.ids[j].name) {
-                            //             continue;
-                            //         } else {
-                            //             this.createUser(this.users[i].name, outputField, 'multiselect-widget__force-right');
-                            //             this.countRight++;
-
-                            //             this.counter(this.rightField, this.userCountRight);
-                            //             this.counter(this.leftField, this.userCountLeft);
-
-                            //             console.log(this.ids);
-                            //         }
-                            //     }
-                            // }
                         });
                         outputField.innerHTML = '';
-                    }
-                    
+                    }  
                 }
             });
         }
@@ -418,114 +420,58 @@
             btn.addEventListener('click', () => {
                 if (this.leftField.children.length !== 0) {
                     this.rightField.innerHTML = '';
-                    for (let key in this.users) {
-                        console.log('qwerty');
-                        this.createUser(this.users[key].name, outputField, 'multiselect-widget__force-left');
-                    }
-                    
-                    // for (let i = 1; i < Object.keys(this.users).length; i++) {
-                    //     this.ids[i] = this.users[key];
-                    // }
-                    // for (let key in this.users) {
-                    //     this.ids[+key + 1 + ''] = this.users[key];
-                    // }
+
+                    this.creatingMultipleUsers(this.users, outputField, 'multiselect-widget__force-left');
 
                     let buffer = {};
 
-                    for (let key in this.ids) {
-                        buffer[Object.keys(buffer).length] = this.ids[key];
-                    }
-
-                    // this.ids = {};
-
-                    for (let key in this.users) {
-                        buffer[Object.keys(buffer).length] = this.users[key];
-                    }
+                    this.enumeratingItemsForBuffer(buffer, this.ids);
+                    this.enumeratingItemsForBuffer(buffer, this.users);
 
                     this.ids = Object.assign({}, buffer);
 
                     this.users = {};
 
-                    this.counter(this.leftField, this.userCountLeft);
-                    this.counter(this.rightField, this.userCountRight);
-
-                    console.log(this.users);
-                    console.log(this.ids);
+                    this.counterRun();
                 } else {
                     this.rightField.innerHTML = '';
-                    for (let key in this.users) {
-                        console.log('qwerty');
-                        this.createUser(this.users[key].name, outputField, 'multiselect-widget__force-left');
-                    }
-                    
+
+                    this.creatingMultipleUsers(this.users, outputField, 'multiselect-widget__force-left');
+
                     this.ids = Object.assign({}, this.users);
                     this.users = {};
 
-                    this.counter(this.leftField, this.userCountLeft);
-                    this.counter(this.rightField, this.userCountRight);
-
-                    console.log(this.users);
-                    console.log(this.ids);
+                    this.counterRun();
                 }
-                
-                
             });
         }
 
         redirectAllLeft(btn, outputField) {
             btn.addEventListener('click', () => {
                 if (outputField.children.length !== 0) {
-                    for (let key in this.ids) {
-                        console.log('qwerty');
-                        this.createUser(this.ids[key].name, outputField, 'multiselect-widget__force-right');
-                    }
+                    this.creatingMultipleUsers(this.ids, outputField, 'multiselect-widget__force-right');
 
                     let buffer = {};
 
-                    for (let key in this.users) {
-                        buffer[Object.keys(buffer).length] = this.users[key];
-                    }
-
-                    for (let key in this.ids) {
-                        buffer[Object.keys(buffer).length] = this.ids[key];
-                    }
-
-                    // this.ids = {};
-
-                    // for (let key in this.users) {
-                    //     buffer[Object.keys(buffer).length] = this.users[key];
-                    // }
+                    this.enumeratingItemsForBuffer(buffer, this.users);
+                    this.enumeratingItemsForBuffer(buffer, this.ids);
 
                     this.users = Object.assign({}, buffer);
 
                     this.leftField.innerHTML = '';
-                    // outputField.innerHTML = '';
-
-                    // for (let key in this.ids) {
-                    //     this.users[key] = this.ids[key];
-                    // }
 
                     this.ids = {};
 
-                    this.counter(this.leftField, this.userCountLeft);
-                    this.counter(this.rightField, this.userCountRight);
-
-                    console.log(this.ids);
+                    this.counterRun();
                 } else {
-                    for (let key in this.ids) {
-                        console.log('qwerty');
-                        this.createUser(this.ids[key].name, outputField, 'multiselect-widget__force-right');
-                    }
+                    this.creatingMultipleUsers(this.ids, outputField, 'multiselect-widget__force-right');
 
                     this.leftField.innerHTML = '';
 
                     this.users = Object.assign({}, this.ids);
                     this.ids = {};
 
-                    this.counter(this.leftField, this.userCountLeft);
-                    this.counter(this.rightField, this.userCountRight);
-
-                    console.log(this.ids);
+                    this.counterRun();
                 }
             });
         }
@@ -535,59 +481,32 @@
                 const target = e.target || e.srcElement;
 
                 if (target && target.classList.contains('selected__user')) {
-
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.users) {
                             if (this.users[key].name === target.textContent) {
                                 let buffer = {};
 
-                                for (let key in this.ids) {
-                                    buffer[Object.keys(buffer).length] = this.ids[key];
-                                }
+                                this.enumeratingItemsForBuffer(buffer, this.ids);
 
                                 this.ids = {};
 
                                 this.ids[key] = this.users[key];
 
-                                for (let key in this.ids) {
-                                    buffer[Object.keys(buffer).length] = this.ids[key];
-                                }
-
-                                // for (let key in this.users) {
-                                //     buffer[Object.keys(buffer).length] = this.users[key];
-                                // }
+                                this.enumeratingItemsForBuffer(buffer, this.ids);
 
                                 this.ids = Object.assign({}, buffer);
-
-                                // this.users = {};
 
                                 delete this.users[key];
                             }
                         }
 
-                        // let buffer = {};
-
-                        // for (let key in this.ids) {
-                        //     buffer[Object.keys(buffer).length] = this.ids[key];
-                        // }
-
-                        // for (let key in this.users) {
-                        //     buffer[Object.keys(buffer).length] = this.users[key];
-                        // }
-
-                        // this.ids = Object.assign({}, buffer);
-
-                        // this.users = {};
-
                         target.classList.remove('multiselect-widget__force-right');
                         target.classList.add('multiselect-widget__force-left');
-                        fieldTo.append(target);
-                        this.counter(this.leftField, this.userCountLeft);
-                        this.counter(this.rightField, this.userCountRight);
-                    }
 
-                    console.log(this.users);
-                    console.log(this.ids);
+                        fieldTo.append(target);
+
+                        this.counterRun();
+                    }
                 }
             });
         }
@@ -597,27 +516,18 @@
                 const target = e.target || e.srcElement;
 
                 if (target && target.classList.contains('selected__user')) {
-
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.ids) {
                             if (this.ids[key].name === target.textContent) {
                                 let buffer = {};
 
-                                for (let key in this.users) {
-                                    buffer[Object.keys(buffer).length] = this.users[key];
-                                }
+                                this.enumeratingItemsForBuffer(buffer, this.users);
 
                                 this.users = {};
 
                                 this.users[key] = this.ids[key];
 
-                                for (let key in this.users) {
-                                    buffer[Object.keys(buffer).length] = this.users[key];
-                                }
-
-                                // for (let key in this.users) {
-                                //     buffer[Object.keys(buffer).length] = this.users[key];
-                                // }
+                                this.enumeratingItemsForBuffer(buffer, this.users);
 
                                 this.users = Object.assign({}, buffer);
 
@@ -627,62 +537,33 @@
 
                         fieldTo.innerHTML = '';
 
-                        for (let key in this.users) {
-                            this.createUser(this.users[key].name, fieldTo, 'multiselect-widget__force-right');
-                        }
-
-                        console.log(this.users);
-                        console.log(this.ids);
+                        this.creatingMultipleUsers(this.users, fieldTo, 'multiselect-widget__force-right');
 
                         target.remove();
 
-                        this.counter(this.leftField, this.userCountLeft);
-                        this.counter(this.rightField, this.userCountRight);
+                        this.counterRun();
                     }
                 }
             });
         }
 
-        counter(field, count) {
-            if (field.children.length === 0) {
-                count.textContent = 'Geen';
-            } else {
-                count.textContent = field.children.length;
-            }
-        }
-
-        search(btn) {
-            btn.addEventListener('click', () => {
-                this.rightText.classList.toggle('active__right-text');
-                this.searchField.classList.toggle('active__header-search');
-            });
-        }
-
-        async dataPost(url, body) {
-            const data = await fetch(url, {
-                method: "POST",
-                body: body
-            });
-
-            return await data.text();
-        }
-
         formPost() {
-            const form = document.querySelector('.form');
-
-            form.addEventListener('submit', e => {
+            this.form.addEventListener('submit', e => {
                 e.preventDefault();
 
-                const formData = new FormData(form);
-
                 for (let key in this.ids) {
-                    formData.append(key, this.ids[key].id);
-                }
+                        const input = document.createElement('input');
 
-                // const json = JSON.stringify(formData);
+                        input.setAttribute('name', 'ids[]');
+                        input.setAttribute('value', this.ids[key].id);
+                        input.style.display = 'none';
 
-                this.dataPost('js/server.php', formData)
-                .then(response => console.log(response));
+                        this.form.append(input);
+                    }
+
+                this.searchField.remove();
+
+                this.form.submit();
             });
         }
 
@@ -697,5 +578,5 @@
         }
     }
 
-    new MultiWidget('.multiselect-widget__list-content--left', '.multiselect-widget__list-content--right', '.multiselect-widget__header-text--left', '.multiselect-widget__header-text--right', '.multiselect-widget__header-search', '.multiselect-widget__button--arrow-left', '.multiselect-widget__button--arrow-right', '.multiselect-widget__button--search', 'js/db.json', 'multiselect-widget__force-right', '.multiselect-widget__count--left', '.multiselect-widget__count--right').init();
+    new MultiWidget('.multiselect-widget__list-content--left', '.multiselect-widget__list-content--right', '.multiselect-widget__header-text--left', '.multiselect-widget__header-text--right', '.multiselect-widget__header-search', '.multiselect-widget__button--arrow-left', '.multiselect-widget__button--arrow-right', '.multiselect-widget__button--search', 'js/db.json', 'multiselect-widget__force-right', '.multiselect-widget__count--left', '.multiselect-widget__count--right', '#create_user_form').init();
 }());
