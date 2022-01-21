@@ -606,6 +606,7 @@ class MultiWidget {
         this.countLeft = 0;
         this.users = {};
         this.ids = {};
+        this.flagForDrag = true;
     }
 
     async get(url) {
@@ -812,13 +813,13 @@ class MultiWidget {
 
         fieldFrom.addEventListener('dragstart', e => {
             const target = e.target || e.srcElement;
-            console.log(target.textContent);
+            this.flagForDrag = true;
 
             fieldTo.addEventListener('drop', () => {
                 if (target && target.classList.contains('selected__user')) {
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.users) {
-                            if (this.users[key].name === target.textContent) {
+                            if (this.users[key].name === target.textContent && this.flagForDrag === true) {
                                 let buffer = {};
 
                                 this.enumeratingItemsForBuffer(buffer, this.ids);
@@ -832,6 +833,8 @@ class MultiWidget {
                                 this.ids = Object.assign({}, buffer);
 
                                 delete this.users[key];
+
+                                this.flagForDrag = false;
                             }
                         }
 
@@ -842,30 +845,8 @@ class MultiWidget {
                         target.remove();
 
                         this.counterRun();
-
-
                     }
                 }
-
-                // for (let x = 0; x < fieldTo.children.length; x++) {
-                //     for (let y = 0; y < fieldFrom.children.length; y++) {
-                //         if (fieldTo.children[x].textContent === fieldFrom.children[y].textContent) {
-                //             fieldTo.children[x].remove();
-                //             x--;
-                //             this.counterRun();
-                //         }
-                //     }
-                // }
-                console.log(this.ids);
-                console.log(fieldTo.children.length);
-                console.log(fieldFrom.children.length);
-                // console.clear();
-                // console.log(target);
-                // console.log('Right to left:');
-                // console.log('users:');
-                // console.log(this.users);
-                // console.log('ids:');
-                // console.log(this.ids);
             });
         });
     }
@@ -907,12 +888,13 @@ class MultiWidget {
 
         fieldFrom.addEventListener('dragstart', e => {
             const target = e.target || e.srcElement;
+            this.flagForDrag = true;
 
             fieldTo.addEventListener('drop', () => {
                 if (target && target.classList.contains('selected__user')) {
                     for (let i = 0; i < fieldFrom.children.length; i++) {
                         for (let key in this.ids) {
-                            if (this.ids[key].name === target.textContent) {
+                            if (this.ids[key].name === target.textContent && this.flagForDrag === true) {
                                 let buffer = {};
 
                                 this.enumeratingItemsForBuffer(buffer, this.users);
@@ -926,6 +908,8 @@ class MultiWidget {
                                 this.users = Object.assign({}, buffer);
 
                                 delete this.ids[key];
+
+                                this.flagForDrag = false;
                             }
                         }
 
@@ -938,18 +922,10 @@ class MultiWidget {
                         this.counterRun();
                     }
                 }
-                // console.clear();
-                // console.log(target);
-                // console.log('Left to right:');
-                // console.log('ids:');
-                // console.log(this.ids);
-                // console.log('users:');
-                // console.log(this.users);
             });
         });
     }
 
-    // Dragover event enable
     fieldsDragover() {
         this.fields.forEach(field => {
             field.addEventListener('dragover', e => {

@@ -48,6 +48,7 @@ h1, h2, h3, p {
 .multiselect-widget__header-text {
     font-size: 1.1rem;
     color: #797979;
+    user-select: none;
 }
 
 .multiselect-widget__button {
